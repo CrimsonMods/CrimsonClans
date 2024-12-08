@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CrimsonClans.Services;
 using CrimsonClans.Structs;
 using CrimsonClans.Utilities;
 using HarmonyLib;
@@ -67,10 +68,20 @@ internal class ClanSystemServerPatch
     private static bool HandleJoinResponseWithCooldown(Entity entity, string type)
     {
         if (type != "Response") return false;
-        if (Settings.LeaveCooldown.Value == 0) return false;
+        var inviteResponse = entity.Read<ClanEvents_Client.ClanInviteResponse>();
+        if (!inviteResponse.Response.Equals(InviteRequestResponse.Accept)) return false;
 
-        var fromCharacter = Core.EntityManager.GetComponentData<FromCharacter>(entity);
-        var user = Core.EntityManager.GetComponentData<User>(fromCharacter.User);
+        var fromCharacter = entity.Read<FromCharacter>();
+        var user = fromCharacter.User.Read<User>();
+
+        if(!CastleHeartService.TryGetClanByID(inviteResponse.ClanId, out var clan)) return false;
+        if(!CastleHeartService.CanJoinClan(fromCharacter.Character, clan))
+        {
+            Cancel(entity, "Joining the clan would result in exceeding the maximum number of castle hearts.");
+            return true;
+        }
+
+        if (Settings.LeaveCooldown.Value == 0) return false;
 
         bool isCooldown = Core.DB.Cooldowns.Any(x => x.Item1 == user.PlatformId && x.Item2 > DateTime.Now);
 
@@ -90,8 +101,6 @@ internal class ClanSystemServerPatch
 
         ServerChatUtils.SendSystemMessageToClient(Core.EntityManager, user, cancelReason);
 
-        Core.EntityManager.AddComponent<Disabled>(entity);
-        DestroyUtility.CreateDestroyEvent(Core.EntityManager, entity, DestroyReason.Default, DestroyDebugReason.ByScript);
-        DestroyUtility.Destroy(Core.EntityManager, entity);
+        entity.DestroyWithReason();
     }
 }
