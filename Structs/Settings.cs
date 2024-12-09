@@ -8,8 +8,13 @@ namespace CrimsonClans.Structs;
 
 public readonly struct Settings
 {
+    // Operations
+    public static ConfigEntry<bool> LockInvite;
+    public static ConfigEntry<bool> LockCreate;
+    public static ConfigEntry<bool> LockLeave;
+    public static ConfigEntry<bool> LockKick;
+    public static ConfigEntry<bool> LockEdit;
 
-    public static ConfigEntry<bool> LockMembers;
     public static ConfigEntry<int> PreRaidBuffer;
     public static ConfigEntry<int> PostRaidBuffer;
 
@@ -19,9 +24,10 @@ public readonly struct Settings
 
     private static readonly List<string> OrderedSections = new()
     {
-        "Raid Time Lock",
+        "General",
+        "Raid Time - Buffers",
+        "Raid Time - Ability Locks",
         "Cooldowns",
-        "Limits",
     };
 
     public static void InitConfig()
@@ -31,21 +37,29 @@ public readonly struct Settings
             CreateDirectories(path);
         }
 
-        LockMembers = InitConfigEntry(OrderedSections[0], "LockMembers", true,
-            "If this is set to true, members will be unable to invite/kick/join clans during raid time.");
+        HeartsPerClan = InitConfigEntry(OrderedSections[0], "HeartsPerClan", 1,
+            "The amount of castle hearts a clan can have.");
 
-        PreRaidBuffer = InitConfigEntry(OrderedSections[0], "PreRaidBufferMins", 30,
+        PreRaidBuffer = InitConfigEntry(OrderedSections[1], "PreRaidBufferMins", 30,
             "The number of minutes before raid time that members will be unable to invite/kick/join clans.");
 
-        PostRaidBuffer = InitConfigEntry(OrderedSections[0], "PostRaidBufferMins", 0,
+        PostRaidBuffer = InitConfigEntry(OrderedSections[1], "PostRaidBufferMins", 0,
             "The number of minutes after raid time that members will be unable to invite/kick/join clans.");
 
-        LeaveCooldown = InitConfigEntry(OrderedSections[1], "JoinCooldown", 0,
+        LockInvite = InitConfigEntry(OrderedSections[2], "Join", true,
+            "If this is set to true, clans will be unable to invite players to their clan during raid time.");
+        LockCreate = InitConfigEntry(OrderedSections[2], "Create", true,
+            "If this is set to true, clans will be unable to be created during raid time.");
+        LockEdit = InitConfigEntry(OrderedSections[2], "Edit", true,
+            "If this is set to true, players will not be able to change clan details during raid time.");
+        LockKick = InitConfigEntry(OrderedSections[2], "Kick", false,
+            "If this is set to true, clans will be unable to kick players from clan during raid time.");
+        LockLeave = InitConfigEntry(OrderedSections[2], "Leave", false,
+            "If this is set to true, players will be unable to leave clans during raid time.");
+        
+        LeaveCooldown = InitConfigEntry(OrderedSections[3], "JoinCooldown", 0,
             "Length of time in minutes that a player must wait before they can join a clan after leaving their previous.");
 
-        HeartsPerClan = InitConfigEntry(OrderedSections[2], "HeartsPerClan", 1, 
-            "The amount of castle hearts a clan can have.");
-    
         ReorderConfigSections();
     }
 

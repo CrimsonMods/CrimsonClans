@@ -32,7 +32,7 @@ internal class ClanSystemServerPatch
             var entities = query.ToEntityArray(Allocator.Temp);
             foreach (var entity in entities)
             {
-                if (HandleRaidWindow(entity)) continue;
+                if (HandleRaidWindow(entity, type)) continue;
                 if (HandleLeaveCooldown(entity, type)) continue;
                 if (HandleJoinResponseWithCooldown(entity, type)) continue;
             }
@@ -40,12 +40,18 @@ internal class ClanSystemServerPatch
         }
     }
 
-    private static bool HandleRaidWindow(Entity entity)
+    private static bool HandleRaidWindow(Entity entity, string type)
     {
-        if (!Settings.LockMembers.Value) return false;
+        if (type == "Invite" && !Settings.LockInvite.Value) return false;
+        if (type == "Response" && !Settings.LockInvite.Value) return false;
+        if (type == "Kick" && !Settings.LockKick.Value) return false;
+        if (type == "Create" && !Settings.LockCreate.Value) return false;
+        if (type == "Leave" && !Settings.LockLeave.Value) return false;
+        if (type == "Edit" && !Settings.LockEdit.Value) return false;
+
         if (RaidTime.IsRaidTimeNow())
         {
-            Cancel(entity, "Clan operations are disabled during the raid window.");
+            Cancel(entity, $"The Clan {type} ability is disabled during the raid window.");
             return true;
         }
 
