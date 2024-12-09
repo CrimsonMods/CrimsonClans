@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>CrimsonClans</AssemblyName>
-    <Description>Created with VRising.ModTemplate, you should edit this.</Description>
+    <Description>Extension to Clans: Hearts per Clan and more!</Description>
     <Version>0.1.10</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -11,6 +11,10 @@
     <FileVersion>0.1.10.0</FileVersion>
     <InformationalVersion>0.1.10+1.Branch.main.Sha.c33d0879382e1a0da34861ec55914ba7e637a80e</InformationalVersion>
   </PropertyGroup>
+  <Target Name="Thunderstore Copy to Dist" AfterTargets="AfterBuild"
+		Condition=" '$(Configuration' == 'Release'">
+		<Copy SourceFiles="$(OutDir)\CrimsonClans.dll" DestinationFolder="$(SolutionDir)/dist" />
+	</Target>
   <ItemGroup>
     <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.691" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.Core" Version="6.0.0-be.691" IncludeAssets="compile" />

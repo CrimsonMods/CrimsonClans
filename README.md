@@ -1,5 +1,5 @@
 # CrimsonClans
-`Server side only` expansion mod for the Clan system.
+`Server side only` extension mod for the Clan system.
 
 Features:
 - Limit Clans to X number of Castle Hearts
