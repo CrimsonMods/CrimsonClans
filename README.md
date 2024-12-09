@@ -49,7 +49,7 @@ Create = true
 # Default value: true
 Edit = true
 
-## If this is set to true, clans will be unable to kick players from clan during raid time.
+## If this is set to true, clans will be unable to kick players from the clan during raid time.
 # Setting type: Boolean
 # Default value: false
 Kick = false

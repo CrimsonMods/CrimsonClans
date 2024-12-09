@@ -53,7 +53,7 @@ public readonly struct Settings
         LockEdit = InitConfigEntry(OrderedSections[2], "Edit", true,
             "If this is set to true, clans will not be able to change their details during raid time.");
         LockKick = InitConfigEntry(OrderedSections[2], "Kick", false,
-            "If this is set to true, clans will be unable to kick players from clan during raid time.");
+            "If this is set to true, clans will be unable to kick players from the clan during raid time.");
         LockLeave = InitConfigEntry(OrderedSections[2], "Leave", false,
             "If this is set to true, players will be unable to leave clans during raid time.");
         
