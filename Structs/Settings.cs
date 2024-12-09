@@ -58,7 +58,7 @@ public readonly struct Settings
             "If this is set to true, players will be unable to leave clans during raid time.");
         
         LeaveCooldown = InitConfigEntry(OrderedSections[3], "JoinCooldown", 0,
-            "Length of time in minutes that a player must wait before they can join a clan after leaving their previous.");
+            "The number of minutes that a player must wait to join a clan after leaving a prior clan.");
 
         ReorderConfigSections();
     }

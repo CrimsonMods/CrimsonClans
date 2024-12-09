@@ -61,7 +61,7 @@ Leave = false
 ```
 
 ```
-## Length of time in minutes that a player must wait before they can join a clan after leaving their previous.
+## The number of minutes that a player must wait to join a clan after leaving a prior clan.
 # Setting type: Int32
 # Default value: 0
 JoinCooldown = 30
