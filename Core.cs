@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using CrimsonClans.Structs;
+using CrimsonClans.Services;
 
 namespace CrimsonClans;
 
@@ -22,6 +23,7 @@ internal static class Core
     public static ServerScriptMapper ServerScriptMapper { get; internal set; }
     public static ServerGameManager ServerGameManager => ServerScriptMapper.GetServerGameManager();
     public static Database DB { get; internal set; }
+    public static CastleHeartService CastleHearts { get; internal set; }
 
     public static ServerGameSettingsSystem ServerGameSettingsSystem { get; internal set; }
 
@@ -43,6 +45,7 @@ internal static class Core
         ServerGameSettingsSystem = Server.GetExistingSystemManaged<ServerGameSettingsSystem>();
         ServerScriptMapper = Server.GetExistingSystemManaged<ServerScriptMapper>();
         DB = new Database();
+        CastleHearts = new CastleHeartService();
         
         _hasInitialized = true;
         Plugin.LogInstance.LogInfo($"{nameof(InitializeAfterLoaded)} completed");

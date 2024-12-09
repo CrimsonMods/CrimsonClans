@@ -7,9 +7,9 @@ using Unity.Collections;
 
 namespace CrimsonClans.Patches;
 
+[HarmonyPatch(typeof(CastleHeartEventSystem), nameof(CastleHeartEventSystem.OnUpdate))]
 internal class CastleHeartEventSystemPatch
 {
-    [HarmonyPatch(typeof(CastleHeartEventSystem), nameof(CastleHeartEventSystem.OnUpdate))]
     public static void Prefix(CastleHeartEventSystem __instance)
     {
         var entities = __instance._CastleHeartInteractEventQuery.ToEntityArray(Allocator.Temp);
@@ -19,6 +19,17 @@ internal class CastleHeartEventSystemPatch
             if(heartEvent.EventType == CastleHeartInteractEventType.Claim)
             {
                 var fromCharacter = entity.Read<FromCharacter>();
+
+                if(CastleHeartService.TryGetCastleHeartByID(heartEvent.CastleHeart, out var castle))
+                {
+                    if(castle.Has<UserOwner>())
+                    {
+                        if(castle.Read<UserOwner>().Owner._Entity.Read<User>() == fromCharacter.User.Read<User>())
+                        {
+                            continue;
+                        }
+                    }
+                }
 
                 if(!CastleHeartService.CanPlaceHeart(fromCharacter.Character))
                 {

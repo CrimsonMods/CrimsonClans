@@ -10,12 +10,12 @@ namespace CrimsonClans.Services;
 
 internal class CastleHeartService
 {
-    public static EntityQuery CaslteHeartQuery;
+    public static EntityQuery CastleHeartQuery;
     public static EntityQuery ClanQuery;
 
     public CastleHeartService()
     {
-        CaslteHeartQuery = Core.EntityManager.CreateEntityQuery(new EntityQueryDesc()
+        CastleHeartQuery = Core.EntityManager.CreateEntityQuery(new EntityQueryDesc()
         {
             All = new ComponentType[] {
                 ComponentType.ReadOnly<CastleHeart>(),
@@ -43,33 +43,45 @@ internal class CastleHeartService
 
         return hearts < Settings.HeartsPerClan.Value;
     }
-
     private static int CountTeamHearts(Entity entity)
     {
+        if (!Core.EntityManager.HasComponent<Team>(entity))
+        {
+            return 0;
+        }
+
         var team = entity.Read<Team>();
         int i = 0;
 
-        var heartEntities = CaslteHeartQuery.ToEntityArray(Allocator.Temp);
-        foreach (var heartEntity in heartEntities)
+        var heartEntities = CastleHeartQuery.ToEntityArray(Allocator.Temp);
+        try
         {
-            var heartTeam = heartEntity.Read<Team>();
-            if (team.Value.Equals(heartTeam.Value))
+            foreach (var heartEntity in heartEntities)
             {
-                i++;
-            }
-        }
+                if (!Core.EntityManager.HasComponent<Team>(heartEntity))
+                    continue;
 
-        heartEntities.Dispose();
-        return i;
+                var heartTeam = heartEntity.Read<Team>();
+                if (team.Value.Equals(heartTeam.Value))
+                {
+                    i++;
+                }
+            }
+            return i;
+        }
+        finally
+        {
+            heartEntities.Dispose();
+        }
     }
 
     public static bool TryGetClanByID(NetworkId clandId, out Entity clan)
     {
-        var clanEntities = CaslteHeartQuery.ToEntityArray(Allocator.Temp);
-        foreach(var clanEntity in clanEntities)
+        var clanEntities = ClanQuery.ToEntityArray(Allocator.Temp);
+        foreach (var clanEntity in clanEntities)
         {
             var networkId = clanEntity.Read<NetworkId>();
-            if(networkId.Equals(clandId))
+            if (networkId.Equals(clandId))
             {
                 clan = clanEntity;
                 clanEntities.Dispose();
@@ -78,6 +90,24 @@ internal class CastleHeartService
         }
         clanEntities.Dispose();
         clan = Entity.Null;
+        return false;
+    }
+
+    public static bool TryGetCastleHeartByID(NetworkId castleId, out Entity castle)
+    {
+        var castleEntities = CastleHeartQuery.ToEntityArray(Allocator.Temp);
+        foreach (var castleEntity in castleEntities)
+        {
+            var networkId = castleEntity.Read<NetworkId>();
+            if (networkId.Equals(castleId))
+            {
+                castle = castleEntity;
+                castleEntities.Dispose();
+                return true;
+            }
+        }
+        castleEntities.Dispose();
+        castle = Entity.Null;
         return false;
     }
 }

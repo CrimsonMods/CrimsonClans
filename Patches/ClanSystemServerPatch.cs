@@ -7,7 +7,6 @@ using HarmonyLib;
 using ProjectM;
 using ProjectM.Gameplay.Clan;
 using ProjectM.Network;
-using ProjectM.Shared;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -25,7 +24,7 @@ internal class ClanSystemServerPatch
             (__instance._KickRequestQuery, "Kick"),
             (__instance._CreateClanEventQuery, "Create"),
             (__instance._LeaveClanEventQuery, "Leave"),
-            (__instance._EditClanEventQuery, "Edit"),
+            (__instance._EditClanEventQuery, "Edit")
         };
 
         foreach (var (query, type) in queries)
@@ -58,10 +57,11 @@ internal class ClanSystemServerPatch
         if (type != "Leave") return false;
         if (Settings.LeaveCooldown.Value == 0) return false;
 
-        var fromCharacter = Core.EntityManager.GetComponentData<FromCharacter>(entity);
-        var user = Core.EntityManager.GetComponentData<User>(fromCharacter.User);
+        var fromCharacter = entity.Read<FromCharacter>();
+        var user = fromCharacter.User.Read<User>();
 
         Core.DB.Cooldowns.Add(new(user.PlatformId, DateTime.Now.AddMinutes(Settings.LeaveCooldown.Value)));
+        Database.SaveFiles();
         return true;
     }
 
@@ -74,20 +74,18 @@ internal class ClanSystemServerPatch
         var fromCharacter = entity.Read<FromCharacter>();
         var user = fromCharacter.User.Read<User>();
 
-        if(!CastleHeartService.TryGetClanByID(inviteResponse.ClanId, out var clan)) return false;
-        if(!CastleHeartService.CanJoinClan(fromCharacter.Character, clan))
+        if (Settings.LeaveCooldown.Value != 0 && Core.DB.Cooldowns.Exists(x => x.PlayerId == user.PlatformId && x.Time > DateTime.Now))
         {
-            Cancel(entity, "Joining the clan would result in exceeding the maximum number of castle hearts.");
+            Cooldown cooldown = Core.DB.Cooldowns.First(x => x.PlayerId == user.PlatformId && x.Time > DateTime.Now);
+            Cancel(entity, $"You are on cooldown from joining a clan for {FormatRemainder(cooldown.Time - DateTime.Now)}.");
             return true;
         }
 
-        if (Settings.LeaveCooldown.Value == 0) return false;
+        if (!CastleHeartService.TryGetClanByID(inviteResponse.ClanId, out var clan)) return false;
 
-        bool isCooldown = Core.DB.Cooldowns.Any(x => x.Item1 == user.PlatformId && x.Item2 > DateTime.Now);
-
-        if (isCooldown)
+        if (!CastleHeartService.CanJoinClan(fromCharacter.Character, clan))
         {
-            Cancel(entity, "You are on cooldown from joining a clan.");
+            Cancel(entity, "Joining the clan would result in exceeding the maximum number of castle hearts.");
             return true;
         }
 
@@ -102,5 +100,21 @@ internal class ClanSystemServerPatch
         ServerChatUtils.SendSystemMessageToClient(Core.EntityManager, user, cancelReason);
 
         entity.DestroyWithReason();
+    }
+
+    private static string FormatRemainder(TimeSpan remainder)
+    {
+        string formattedRemainder = string.Empty;
+        if (remainder.Days > 0)
+            formattedRemainder += $"{remainder.Days} days, ";
+        if (remainder.Hours > 0)
+            formattedRemainder += $"{remainder.Hours} hours, ";
+        if (remainder.Minutes > 0)
+            formattedRemainder += $"{remainder.Minutes} minutes";
+
+        if (formattedRemainder.EndsWith(", "))
+            formattedRemainder = formattedRemainder.Substring(0, formattedRemainder.Length - 2);
+
+        return formattedRemainder;
     }
 }

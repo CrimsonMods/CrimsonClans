@@ -9,7 +9,7 @@ public class Database
 {
     public static string JoinCooldownPath = Path.Combine(Plugin.ConfigFiles, "joincooldowns.json");
 
-    public List<(ulong, DateTime)> Cooldowns { get; set; }
+    public List<Cooldown> Cooldowns { get; set; }
 
     public Database()
     {
@@ -23,7 +23,7 @@ public class Database
         if(Settings.LeaveCooldown.Value > 0)
         {
             json = File.ReadAllText(JoinCooldownPath);
-            Cooldowns = JsonSerializer.Deserialize<List<(ulong, DateTime)>>(json);
+            Cooldowns = JsonSerializer.Deserialize<List<Cooldown>>(json);
         }
     }
 
@@ -37,5 +37,24 @@ public class Database
 
             File.WriteAllText(JoinCooldownPath, json);
         }
+    }
+
+    public static void SaveFiles()
+    {
+        var json = JsonSerializer.Serialize(Core.DB.Cooldowns);
+        File.WriteAllText(JoinCooldownPath, json);
+    }
+}
+
+[Serializable]
+public struct Cooldown
+{
+    public ulong PlayerId { get; set; }
+    public DateTime Time { get; set; }
+
+    public Cooldown(ulong playerId, DateTime time)
+    {
+        PlayerId = playerId;
+        Time = time;
     }
 }
