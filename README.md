@@ -4,7 +4,7 @@
 Features:
 - Limit Clans to X number of Castle Hearts
 - Limit ability to do clan operations (join, create, leave, kick, edit, invite, etc) during raid window
-- Add a buffer of time prior and after the raid window
+- Limit ability to do clan operations prior and after the raid window (raid buffers)
 - Add a cooldown to joining clans after leaving one
 
 ## Installation
@@ -22,12 +22,12 @@ HeartsPerClan = 1
 ```
 
 ```
-## The number of minutes before raid time that members will be unable to invite/kick/join clans.
+## The number of minutes prior to the raid window to lock clan operation.
 # Setting type: Int32
 # Default value: 30
 PreRaidBufferMins = 30
 
-## The number of minutes after raid time that members will be unable to invite/kick/join clans.
+## The number of minutes past the raid window to lock clan operation.
 # Setting type: Int32
 # Default value: 0
 PostRaidBufferMins = 0
@@ -37,14 +37,14 @@ PostRaidBufferMins = 0
 ## If this is set to true, clans will be unable to invite players to their clan during raid time.
 # Setting type: Boolean
 # Default value: true
-Join = true
+Invite = true
 
 ## If this is set to true, clans will be unable to be created during raid time.
 # Setting type: Boolean
 # Default value: true
 Create = true
 
-## If this is set to true, players will not be able to change clan details during raid time.
+## If this is set to true, clans will not be able to change their details during raid time.
 # Setting type: Boolean
 # Default value: true
 Edit = true

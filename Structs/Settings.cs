@@ -41,17 +41,17 @@ public readonly struct Settings
             "The amount of castle hearts a clan can have.");
 
         PreRaidBuffer = InitConfigEntry(OrderedSections[1], "PreRaidBufferMins", 30,
-            "The number of minutes before raid time that members will be unable to invite/kick/join clans.");
+            "The number of minutes prior to the raid window to lock clan operation.");
 
         PostRaidBuffer = InitConfigEntry(OrderedSections[1], "PostRaidBufferMins", 0,
-            "The number of minutes after raid time that members will be unable to invite/kick/join clans.");
+            "The number of minutes past the raid window to lock clan operation.");
 
-        LockInvite = InitConfigEntry(OrderedSections[2], "Join", true,
+        LockInvite = InitConfigEntry(OrderedSections[2], "Invite", true,
             "If this is set to true, clans will be unable to invite players to their clan during raid time.");
         LockCreate = InitConfigEntry(OrderedSections[2], "Create", true,
             "If this is set to true, clans will be unable to be created during raid time.");
         LockEdit = InitConfigEntry(OrderedSections[2], "Edit", true,
-            "If this is set to true, players will not be able to change clan details during raid time.");
+            "If this is set to true, clans will not be able to change their details during raid time.");
         LockKick = InitConfigEntry(OrderedSections[2], "Kick", false,
             "If this is set to true, clans will be unable to kick players from clan during raid time.");
         LockLeave = InitConfigEntry(OrderedSections[2], "Leave", false,
