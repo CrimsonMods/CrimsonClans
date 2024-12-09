@@ -4,7 +4,7 @@
 Features:
 - Limit Clans to X number of Castle Hearts
 - Limit ability to do clan operations (join, create, leave, kick, edit, invite, etc) during raid window
-- Add a buffer of time prior and after the raid window
+- Limit ability to do clan operations prior and after the raid window (raid buffers)
 - Add a cooldown to joining clans after leaving one
 
 ## Installation
