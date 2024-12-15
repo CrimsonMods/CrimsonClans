@@ -60,14 +60,40 @@ internal class ClanSystemServerPatch
 
     private static bool HandleLeaveCooldown(Entity entity, string type)
     {
-        if (type != "Leave") return false;
-        if (Settings.LeaveCooldown.Value == 0) return false;
+        if (type == "Leave" || type == "Kick")
+        {
+            if (Settings.LeaveCooldown.Value == 0) return false;
 
-        var fromCharacter = entity.Read<FromCharacter>();
-        var user = fromCharacter.User.Read<User>();
+            var fromCharacter = entity.Read<FromCharacter>();
+            var user = fromCharacter.User.Read<User>();
 
-        Core.DB.Cooldowns.Add(new(user.PlatformId, DateTime.Now.AddMinutes(Settings.LeaveCooldown.Value)));
-        Database.SaveFiles();
+            if (type == "Kick")
+            {
+                if (!Settings.KickCooldown.Value) return false;
+                var kickRequest = entity.Read<ClanEvents_Client.Kick_Request>();
+
+                var members = Core.EntityManager.GetBuffer<ClanMemberStatus>(user.ClanEntity._Entity);
+                var userBuffer = Core.EntityManager.GetBuffer<SyncToUserBuffer>(user.ClanEntity._Entity);
+
+                for (var i = 0; i < members.Length; ++i)
+                {
+                    if (members[i].UserIndex == kickRequest.TargetUserIndex)
+                    {
+                        user = userBuffer[i].UserEntity.Read<User>();
+                        break;
+                    }
+                }
+            }
+
+            Core.DB.Cooldowns.Add(new(user.PlatformId, DateTime.Now.AddMinutes(Settings.LeaveCooldown.Value)));
+            Database.SaveFiles();
+        }
+        else
+        {
+            return false;
+        }
+
+
         return true;
     }
 

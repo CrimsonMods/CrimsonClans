@@ -19,6 +19,7 @@ public readonly struct Settings
     public static ConfigEntry<int> PostRaidBuffer;
 
     public static ConfigEntry<int> LeaveCooldown;
+    public static ConfigEntry<bool> KickCooldown;
 
     public static ConfigEntry<int> HeartsPerClan;
 
@@ -51,14 +52,16 @@ public readonly struct Settings
         LockCreate = InitConfigEntry(OrderedSections[2], "Create", true,
             "If this is set to true, clans will be unable to be created during raid time.");
         LockEdit = InitConfigEntry(OrderedSections[2], "Edit", true,
-            "If this is set to true, clans will not be able to change their details during raid time.");
+            "If this is set to true, clans will be unable to change their details during raid time.");
         LockKick = InitConfigEntry(OrderedSections[2], "Kick", false,
             "If this is set to true, clans will be unable to kick players from the clan during raid time.");
         LockLeave = InitConfigEntry(OrderedSections[2], "Leave", false,
             "If this is set to true, players will be unable to leave clans during raid time.");
-        
+
         LeaveCooldown = InitConfigEntry(OrderedSections[3], "JoinCooldown", 0,
             "The number of minutes that a player must wait to join a clan after leaving a prior clan.");
+        KickCooldown = InitConfigEntry(OrderedSections[3], "KickCooldown", false,
+            "If this is set to true, being kicked from a clan will apply a join cooldown to a player as if they left the clan on their own.");
 
         ReorderConfigSections();
     }
