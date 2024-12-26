@@ -1,4 +1,7 @@
 `latest`
+- Added "seconds" to the cooldown response
+
+`1.1.1`
 - Added KickCooldown
 - Added clarity to some config options
 

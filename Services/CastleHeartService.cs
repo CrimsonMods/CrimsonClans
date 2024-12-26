@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CrimsonClans.Structs;
 using ProjectM;
 using ProjectM.CastleBuilding;

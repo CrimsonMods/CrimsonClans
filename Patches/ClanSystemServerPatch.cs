@@ -142,7 +142,9 @@ internal class ClanSystemServerPatch
         if (remainder.Hours > 0)
             formattedRemainder += $"{remainder.Hours} hours, ";
         if (remainder.Minutes > 0)
-            formattedRemainder += $"{remainder.Minutes} minutes";
+            formattedRemainder += $"{remainder.Minutes} minutes, ";
+        if (remainder.Seconds > 0)
+            formattedRemainder += $"{remainder.Seconds} seconds";
 
         if (formattedRemainder.EndsWith(", "))
             formattedRemainder = formattedRemainder.Substring(0, formattedRemainder.Length - 2);
